@@ -90,8 +90,15 @@ export default function CVUpload() {
       setMessage("CV uploaded successfully! We'll review it shortly.")
       setUploadSuccess(true)
       console.log("Response:", response.data)
-    } catch (error: any) {
-      setMessage("Error uploading CV: " + (error.response?.data?.message || error.message))
+    } catch (error: unknown) {
+      const errorMessage =
+        error instanceof Error
+          ? error.message
+          : typeof error === "object" && error !== null && "response" in error
+            ? (error as { response?: { data?: { message?: string } } }).response?.data?.message || "Unknown error"
+            : "Unknown error"
+
+      setMessage("Error uploading CV: " + errorMessage)
       console.error("Error:", error)
     } finally {
       setIsLoading(false)
